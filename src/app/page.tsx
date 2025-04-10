@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useState, type ReactNode, type ButtonHTMLAttributes } from "react"
+import RegistrationModal from "./components/Modals/CreateUser"
 
 // Definición de tipos para el componente Button
 type ButtonVariant = "default" | "outline" | "ghost" | "emerald"
@@ -43,6 +44,7 @@ const Button = ({ children, className = "", variant = "default", size = "default
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -89,7 +91,7 @@ export default function HomePage() {
               >
                 Iniciar sesión
               </Button>
-              <Button variant="emerald" className="hidden md:flex">
+              <Button onClick={() => setIsOpen(true)} variant="emerald" className="hidden md:flex">
                 Registrarse
               </Button>
               <Button
@@ -534,6 +536,7 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+      {isOpen && <RegistrationModal isOpen={isOpen} setIsOpen={setIsOpen} />}
     </div>
   )
 }
