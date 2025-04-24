@@ -7,7 +7,6 @@ import RegistrationModal from "./components/Modals/CreateUser"
 import RegistrationModalProf from "./components/Modals/CreateProfessional"
 import Login from "./components/Modals/Login"
 import Button from "./components/Button"
-import Navbar from "./components/Navbar"
 
 export default function HomePage() {
   const [isOpen, setIsOpen] = useState(false)
@@ -24,11 +23,7 @@ export default function HomePage() {
         crossOrigin="anonymous"
         referrerPolicy="no-referrer"
       />
-
-      {/* Header */}
-      <Navbar setIsOpen={setIsOpen} setIsOpenLogin={setIsOpenLogin} />
-
-      {/* El resto del código permanece igual */}
+      
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-[#1E3A8A] to-[#2C4A9A] text-white py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
