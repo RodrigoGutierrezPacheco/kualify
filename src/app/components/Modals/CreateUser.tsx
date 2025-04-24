@@ -100,12 +100,25 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
 
   if (!isOpen) return null
 
+  const handleClose = () => {
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    })
+    setErrors({})
+    setIsSubmitting(false)
+    setSubmitSuccess(false)
+    setIsOpen(false)
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-        onClick={() => !isSubmitting && setIsOpen(false)}
+        onClick={() => !isSubmitting && handleClose()}
         aria-hidden="true"
       />
 
@@ -117,7 +130,7 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
           <div className="bg-[#1e3a8a] text-white p-5 relative shrink-0">
             <div className="absolute top-4 right-4">
               <button
-                onClick={() => !isSubmitting && setIsOpen(false)}
+                onClick={() => !isSubmitting && handleClose()}
                 disabled={isSubmitting}
                 className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 aria-label="Cerrar modal"
@@ -146,7 +159,7 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
                 <h3 className="text-xl font-medium mb-2 text-[#1e3a8a]">¡Registro Exitoso!</h3>
                 <p className="text-gray-600 mb-6">Tu cuenta ha sido creada correctamente.</p>
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => handleClose()}
                   className="w-full py-2.5 px-4 rounded-md bg-[#1e3a8a] text-white font-medium hover:bg-[#1e3a8a]/90 transition-colors focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-offset-2"
                 >
                   Continuar
@@ -219,6 +232,12 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
                       onFocus={() => handleFocus("email")}
                       onBlur={handleBlur}
                       disabled={isSubmitting}
+                      autoComplete="off"
+                      // Agrega estos atributos adicionales:
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck="false"
+                      // Nombre aleatorio para engañar al navegador:
                       className={`block w-full pl-9 pr-3 py-2.5 border ${errors.email ? "border-red-300" : activeField === "email" ? "border-[#1e3a8a]" : "border-gray-300"} rounded-md shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-0 focus:border-[#1e3a8a] sm:text-sm`}
                     />
                   </div>

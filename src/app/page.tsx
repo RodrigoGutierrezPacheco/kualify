@@ -2,49 +2,17 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState, type ReactNode, type ButtonHTMLAttributes } from "react"
+import { useState } from "react"
 import RegistrationModal from "./components/Modals/CreateUser"
-
-// Definición de tipos para el componente Button
-type ButtonVariant = "default" | "outline" | "ghost" | "emerald"
-type ButtonSize = "default" | "sm" | "lg" | "icon"
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode
-  className?: string
-  variant?: ButtonVariant
-  size?: ButtonSize
-}
-
-// Componente Button personalizado con tipos correctos
-const Button = ({ children, className = "", variant = "default", size = "default", ...props }: ButtonProps) => {
-  const baseStyles =
-    "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none"
-
-  const variants: Record<ButtonVariant, string> = {
-    default: "bg-[#1E3A8A] text-white hover:bg-[#152C6C]",
-    outline: "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
-    ghost: "hover:bg-accent hover:text-accent-foreground",
-    emerald: "bg-[#00C897] hover:bg-[#00A77D] text-white border-none",
-  }
-
-  const sizes: Record<ButtonSize, string> = {
-    default: "h-10 py-2 px-4",
-    sm: "h-9 px-3 rounded-md",
-    lg: "h-12 px-8 rounded-md text-lg",
-    icon: "h-10 w-10",
-  }
-
-  return (
-    <button className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>
-      {children}
-    </button>
-  )
-}
+import RegistrationModalProf from "./components/Modals/CreateProfessional"
+import Login from "./components/Modals/Login"
+import Button from "./components/Button"
+import Navbar from "./components/Navbar"
 
 export default function HomePage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const [isOpenProf, setIsOpenProf] = useState(false)
+  const [isOpenLogin, setIsOpenLogin] = useState(false)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -58,85 +26,7 @@ export default function HomePage() {
       />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center">
-                <Image src="/images/kualify.png" alt="Logo" width={50} height={50} />
-                <span className="text-xl font-bold text-[#1E3A8A]">Kualify</span>
-              </Link>
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              <Link href="#servicios" className="text-gray-600 hover:text-[#1E3A8A] font-medium">
-                Servicios
-              </Link>
-              <Link href="#como-funciona" className="text-gray-600 hover:text-[#1E3A8A] font-medium">
-                Cómo funciona
-              </Link>
-              <Link href="#profesionales" className="text-gray-600 hover:text-[#1E3A8A] font-medium">
-                Profesionales
-              </Link>
-              <Link href="#contacto" className="text-gray-600 hover:text-[#1E3A8A] font-medium">
-                Contacto
-              </Link>
-            </nav>
-
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="outline"
-                className="hidden md:flex border-[#1E3A8A] text-[#1E3A8A] hover:bg-[#1E3A8A] hover:text-white"
-              >
-                Iniciar sesión
-              </Button>
-              <Button onClick={() => setIsOpen(true)} variant="emerald" className="hidden md:flex">
-                Registrarse
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                <i className="fas fa-bars h-6 w-6"></i>
-              </Button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t">
-              <nav className="flex flex-col space-y-4">
-                <Link href="#servicios" className="text-gray-600 hover:text-[#1E3A8A] font-medium px-4">
-                  Servicios
-                </Link>
-                <Link href="#como-funciona" className="text-gray-600 hover:text-[#1E3A8A] font-medium px-4">
-                  Cómo funciona
-                </Link>
-                <Link href="#profesionales" className="text-gray-600 hover:text-[#1E3A8A] font-medium px-4">
-                  Profesionales
-                </Link>
-                <Link href="#contacto" className="text-gray-600 hover:text-[#1E3A8A] font-medium px-4">
-                  Contacto
-                </Link>
-                <div className="flex flex-col space-y-2 px-4 pt-2">
-                  <Button
-                    variant="outline"
-                    className="border-[#1E3A8A] text-[#1E3A8A] hover:bg-[#1E3A8A] hover:text-white w-full"
-                  >
-                    Iniciar sesión
-                  </Button>
-                  <Button variant="emerald" className="w-full">
-                    Registrarse
-                  </Button>
-                </div>
-              </nav>
-            </div>
-          )}
-        </div>
-      </header>
+      <Navbar setIsOpen={setIsOpen} setIsOpenLogin={setIsOpenLogin} />
 
       {/* El resto del código permanece igual */}
       {/* Hero Section */}
@@ -156,6 +46,9 @@ export default function HomePage() {
                   variant="outline"
                   size="lg"
                   className="bg-transparent border-white text-white hover:bg-white hover:text-[#1E3A8A]"
+                  onClick={() => {
+                    setIsOpenProf(true)
+                  }}
                 >
                   Ofrecer mis servicios
                 </Button>
@@ -537,6 +430,8 @@ export default function HomePage() {
         </div>
       </footer>
       {isOpen && <RegistrationModal isOpen={isOpen} setIsOpen={setIsOpen} />}
+      {isOpenProf && <RegistrationModalProf isOpen={isOpenProf} setIsOpen={setIsOpenProf} />}
+      {isOpenLogin && <Login isOpen={isOpenLogin} setIsOpen={setIsOpenLogin} />}
     </div>
   )
 }
