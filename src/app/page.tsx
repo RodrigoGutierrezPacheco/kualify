@@ -3,10 +3,10 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
-import RegistrationModal from "./components/Modals/CreateUser"
-import RegistrationModalProf from "./components/Modals/CreateProfessional"
-import Login from "./components/Modals/Login"
-import Button from "./components/Button"
+import RegistrationModal from "@/components/Modals/CreateUser"
+import RegistrationModalProfessional from "@/components/Modals/CreateProfessional"
+import Login from "@/components/Modals/Login"
+import Button from "@/components/Button"
 
 export default function HomePage() {
   const [isOpen, setIsOpen] = useState(false)
@@ -425,7 +425,7 @@ export default function HomePage() {
         </div>
       </footer>
       {isOpen && <RegistrationModal isOpen={isOpen} setIsOpen={setIsOpen} />}
-      {isOpenProf && <RegistrationModalProf isOpen={isOpenProf} setIsOpen={setIsOpenProf} />}
+      {isOpenProf && <RegistrationModalProfessional isOpen={isOpenProf} setIsOpen={setIsOpenProf} />}
       {isOpenLogin && <Login isOpen={isOpenLogin} setIsOpen={setIsOpenLogin} />}
     </div>
   )

@@ -6,8 +6,10 @@ import Button from "./Button"
 import { User, LogOut, Menu, X, Settings, UserCircle } from "lucide-react"
 import RegistrationModal from "./Modals/CreateUser"
 import Login from "./Modals/Login"
+import { useAuth } from "@/context/AuthContext"
 
 export default function Navbar() {
+    const {token} = useAuth()
     const [isOpen, setIsOpen] = useState(false)
     const [isOpenLogin, setIsOpenLogin] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -24,7 +26,6 @@ export default function Navbar() {
         if (typeof window !== "undefined") {
             // Check if user is logged in when component mounts
             const checkAuthStatus = () => {
-                const token = localStorage.getItem("tokenK")
                 if (token) {
                     setIsLoggedIn(true)
                     // Try to get user name from localStorage if available
@@ -81,7 +82,7 @@ export default function Navbar() {
                 document.removeEventListener("mousedown", handleClickOutside)
             }
         }
-    }, [])
+    }, [token])
 
     const handleLogout = () => {
         localStorage.removeItem("tokenK")

@@ -2,7 +2,8 @@
 import { useState } from "react"
 import type React from "react"
 import { X, Shield, Mail, Lock, Eye, EyeOff, User, Briefcase } from "lucide-react"
-import { loginProfessional, loginUser } from "@/app/services/auth"
+import { loginProfessional, loginUser } from "@/services/auth"
+import { useAuth } from "@/context/AuthContext"
 
 interface LoginModalProps {
   isOpen: boolean
@@ -10,6 +11,7 @@ interface LoginModalProps {
 }
 
 export default function Login({ isOpen, setIsOpen }: LoginModalProps) {
+  const { login } = useAuth();
   const [loginType, setLoginType] = useState<"user" | "professional">("user")
   const [formData, setFormData] = useState({
     email: "",
@@ -55,41 +57,40 @@ export default function Login({ isOpen, setIsOpen }: LoginModalProps) {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      let response
+      let response;
 
       if (loginType === "user") {
-        response = await loginUser(formData.email, formData.password)
+        response = await loginUser(formData.email, formData.password);
       } else {
-        response = await loginProfessional(formData.email, formData.password)
+        response = await loginProfessional(formData.email, formData.password);
       }
 
       if (response.status === 200 || response.status === 201) {
-        localStorage.setItem("tokenK", response.access_token)
-        // Si la autenticación es exitosa, cerrar el modal
-        setIsOpen(false)
-        window.location.href = "/"
-        // Aquí podrías redirigir al usuario o actualizar el estado global de autenticación
+        // Ejecuta la función login del contexto con el token encriptado
+        login(response.access_token); // <-- Esto reemplaza el localStorage.setItem
+        // Cierra el modal y redirige
+        setIsOpen(false);
+        // window.location.href = "/";
       } else {
-        // Si hay un error en la respuesta
-        setErrors((prev) => ({ ...prev, form: response.message || "Credenciales incorrectas" }))
+        setErrors((prev) => ({ ...prev, form: response.message || "Credenciales incorrectas" }));
       }
     } catch (error) {
       if (error instanceof Error) {
-        setErrors((prev) => ({ ...prev, form: error.message }))
+        setErrors((prev) => ({ ...prev, form: error.message }));
       } else {
-        setErrors((prev) => ({ ...prev, form: "Ha ocurrido un error inesperado" }))
+        setErrors((prev) => ({ ...prev, form: "Ha ocurrido un error inesperado" }));
       }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   if (!isOpen) return null
 
@@ -134,11 +135,10 @@ export default function Login({ isOpen, setIsOpen }: LoginModalProps) {
               <button
                 type="button"
                 onClick={() => setLoginType("user")}
-                className={`flex items-center justify-center gap-2 flex-1 py-2.5 px-4 text-sm font-medium rounded-l-md border ${
-                  loginType === "user"
-                    ? "bg-[#1e3a8a] text-white border-[#1e3a8a]"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                }`}
+                className={`flex items-center justify-center gap-2 flex-1 py-2.5 px-4 text-sm font-medium rounded-l-md border ${loginType === "user"
+                  ? "bg-[#1e3a8a] text-white border-[#1e3a8a]"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  }`}
               >
                 <User className="h-4 w-4" />
                 Usuario
@@ -146,11 +146,10 @@ export default function Login({ isOpen, setIsOpen }: LoginModalProps) {
               <button
                 type="button"
                 onClick={() => setLoginType("professional")}
-                className={`flex items-center justify-center gap-2 flex-1 py-2.5 px-4 text-sm font-medium rounded-r-md border ${
-                  loginType === "professional"
-                    ? "bg-[#1e3a8a] text-white border-[#1e3a8a]"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                }`}
+                className={`flex items-center justify-center gap-2 flex-1 py-2.5 px-4 text-sm font-medium rounded-r-md border ${loginType === "professional"
+                  ? "bg-[#1e3a8a] text-white border-[#1e3a8a]"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  }`}
               >
                 <Briefcase className="h-4 w-4" />
                 Profesional

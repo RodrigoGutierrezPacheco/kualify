@@ -2,7 +2,7 @@
 import { useState } from "react"
 import type React from "react"
 import { X, Shield, Check, User, Mail, Lock, Eye, EyeOff } from "lucide-react"
-import { createProfessional } from "@/app/services/professionals"
+import { createProfessional } from "@/services/professionals"
 
 interface RegistrationModalProps {
     isOpen: boolean

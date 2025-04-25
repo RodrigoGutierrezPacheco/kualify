@@ -1,7 +1,10 @@
 "use client"
+
+import { useAuth } from "@/context/AuthContext";
+
 export default function Perfil() {
-    const userToken = localStorage.getItem('tokenK');
-    console.log(userToken)
+    const { user } = useAuth();
+    console.log(user)
     return (
         <div>
             <span>Perfil</span>
