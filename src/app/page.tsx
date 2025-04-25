@@ -6,7 +6,7 @@ import { useState } from "react"
 import RegistrationModal from "@/components/Modals/CreateUser"
 import RegistrationModalProfessional from "@/components/Modals/CreateProfessional"
 import Login from "@/components/Modals/Login"
-import Button from "@/components/Button"
+import Button from "@/components/ui/button"
 
 export default function HomePage() {
   const [isOpen, setIsOpen] = useState(false)

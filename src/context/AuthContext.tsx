@@ -1,18 +1,25 @@
 // context/AuthContext.tsx
 'use client';
 
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect, useMemo } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
 interface User {
   email: string;
-  sub: string; // ID del usuario
-  role?: string;
+  id: string | { id: string };
+  role: 'user' | 'professional' | 'admin';
+}
+
+interface NormalizedUser {
+  email: string;
+  id: string;
+  role: 'user' | 'professional' | 'admin';
 }
 
 interface AuthContextType {
   token: string | null;
-  user: User | null;
+  user: NormalizedUser | null;
+  userId: string | null; // Nueva propiedad para el ID directo
   login: (token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
@@ -22,13 +29,29 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [rawUser, setRawUser] = useState<User | null>(null);
+
+  // Normaliza el usuario y extrae el ID
+  const normalizeUser = (user: User | null): { normalizedUser: NormalizedUser | null, userId: string | null } => {
+    if (!user) return { normalizedUser: null, userId: null };
+    
+    const userId = typeof user.id === 'object' ? user.id.id : user.id;
+    return {
+      normalizedUser: {
+        ...user,
+        id: userId
+      },
+      userId
+    };
+  };
+
+  const { normalizedUser: user, userId } = useMemo(() => normalizeUser(rawUser), [rawUser]);
 
   const login = (token: string) => {
     try {
-      const decoded = jwtDecode<User>(token); // Decodifica el JWT
+      const decoded = jwtDecode<User>(token);
       setToken(token);
-      setUser(decoded);
+      setRawUser(decoded);
       localStorage.setItem('tokenK', token);
     } catch (error) {
       console.error("Error al decodificar el token:", error);
@@ -38,7 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setToken(null);
-    setUser(null);
+    setRawUser(null);
     localStorage.removeItem('tokenK');
   };
 
@@ -48,9 +71,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const decoded = jwtDecode<User>(storedToken);
         setToken(storedToken);
-        setUser(decoded);
+        setRawUser(decoded);
       } catch (error) {
-        console.log(error)
+        console.error("Error al decodificar el token almacenado:", error);
         logout();
       }
     }
@@ -59,6 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value: AuthContextType = {
     token,
     user,
+    userId, 
     login,
     logout,
     isAuthenticated: !!token,

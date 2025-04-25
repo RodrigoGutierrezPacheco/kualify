@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import Button from "./Button"
+import Button from "./ui/button"
 import { User, LogOut, Menu, X, Settings, UserCircle } from "lucide-react"
 import RegistrationModal from "./Modals/CreateUser"
 import Login from "./Modals/Login"

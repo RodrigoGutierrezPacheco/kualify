@@ -1,21 +1,31 @@
 "use client"
 import { useState } from "react"
 import type React from "react"
-import { X, Shield, Check, User, Mail, Lock, Eye, EyeOff } from "lucide-react"
+import { X, Shield, Check, User, Mail, Lock, Eye, EyeOff, Briefcase } from 'lucide-react'
 import { createUser } from "./../../services/users"
+import { createProfessional } from "./../../services/professionals" // Asumiendo que tienes este servicio
 
 interface RegistrationModalProps {
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
 }
 
+type UserType = "user" | "professional"
+
 export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationModalProps) {
+  // Estado para controlar el tipo de usuario seleccionado
+  const [userType, setUserType] = useState<UserType>("user")
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    // Campos adicionales para profesionales
+    professionalName: "",
+    professionalEmail: "",
   })
+  
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
@@ -43,14 +53,27 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.name.trim()) {
-      newErrors.name = "El nombre es obligatorio"
-    }
+    if (userType === "user") {
+      if (!formData.name.trim()) {
+        newErrors.name = "El nombre es obligatorio"
+      }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "El email es obligatorio"
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "El email no es válido"
+      if (!formData.email.trim()) {
+        newErrors.email = "El email es obligatorio"
+      } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+        newErrors.email = "El email no es válido"
+      }
+    } else {
+      // Validación para profesionales
+      if (!formData.professionalName.trim()) {
+        newErrors.professionalName = "El nombre profesional es obligatorio"
+      }
+
+      if (!formData.professionalEmail.trim()) {
+        newErrors.professionalEmail = "El email profesional es obligatorio"
+      } else if (!/^\S+@\S+\.\S+$/.test(formData.professionalEmail)) {
+        newErrors.professionalEmail = "El email no es válido"
+      }
     }
 
     if (!formData.password) {
@@ -75,11 +98,22 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
     setIsSubmitting(true)
 
     try {
-      const response = await createUser({
-        username: formData.name,
-        email: formData.email,
-        password: formData.password,
-      })
+      let response;
+      
+      if (userType === "user") {
+        response = await createUser({
+          username: formData.name,
+          email: formData.email,
+          password: formData.password,
+        });
+      } else {
+        // Llamada al servicio para crear profesionales
+        response = await createProfessional({
+          profesionalname: formData.professionalName,
+          email: formData.professionalEmail,
+          password: formData.password,
+        });
+      }
 
       if (response.statusCode === 200 || response.statusCode === 201) {
         setSubmitSuccess(true)
@@ -106,10 +140,13 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
       email: "",
       password: "",
       confirmPassword: "",
+      professionalName: "",
+      professionalEmail: "",
     })
     setErrors({})
     setIsSubmitting(false)
     setSubmitSuccess(false)
+    setUserType("user")
     setIsOpen(false)
   }
 
@@ -143,9 +180,13 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
               <Shield className="h-7 w-7 text-[#10b981]" />
               <h2 className="text-xl font-bold">Kualify</h2>
             </div>
-            <h3 className="text-lg font-medium">Crear una cuenta</h3>
+            <h3 className="text-lg font-medium">
+              {userType === "user" ? "Crear una cuenta" : "Crear una cuenta profesional"}
+            </h3>
             <p className="text-white/80 mt-1 text-sm">
-              Únete a nuestra plataforma y conecta con profesionales calificados
+              {userType === "user" 
+                ? "Únete a nuestra plataforma y conecta con profesionales calificados" 
+                : "Únete a nuestra plataforma como profesional y ofrece tus servicios a clientes potenciales"}
             </p>
           </div>
 
@@ -157,7 +198,11 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
                   <Check className="h-8 w-8 text-[#10b981]" />
                 </div>
                 <h3 className="text-xl font-medium mb-2 text-[#1e3a8a]">¡Registro Exitoso!</h3>
-                <p className="text-gray-600 mb-6">Tu cuenta ha sido creada correctamente.</p>
+                <p className="text-gray-600 mb-6">
+                  {userType === "user" 
+                    ? "Tu cuenta ha sido creada correctamente." 
+                    : "Tu cuenta profesional ha sido creada correctamente."}
+                </p>
                 <button
                   onClick={() => handleClose()}
                   className="w-full py-2.5 px-4 rounded-md bg-[#1e3a8a] text-white font-medium hover:bg-[#1e3a8a]/90 transition-colors focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-offset-2"
@@ -187,63 +232,153 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
                   </div>
                 )}
 
-                <div className="space-y-1">
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                    Nombre completo
-                  </label>
-                  <div
-                    className={`relative rounded-md shadow-sm ${errors.name ? "ring-1 ring-red-500" : activeField === "name" ? "ring-1 ring-[#1e3a8a]" : ""}`}
+                {/* Selector de tipo de usuario */}
+                <div className="grid grid-cols-2 gap-0 rounded-md overflow-hidden border border-gray-300 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setUserType("user")}
+                    className={`flex items-center justify-center py-2.5 px-4 text-sm font-medium ${
+                      userType === "user"
+                        ? "bg-[#1e3a8a] text-white"
+                        : "bg-white text-gray-700 hover:bg-gray-50"
+                    }`}
                   >
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User className={`h-4 w-4 ${activeField === "name" ? "text-[#1e3a8a]" : "text-gray-400"}`} />
-                    </div>
-                    <input
-                      id="name"
-                      name="name"
-                      placeholder="Juan Pérez"
-                      value={formData.name}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("name")}
-                      onBlur={handleBlur}
-                      disabled={isSubmitting}
-                      className={`block w-full pl-9 pr-3 py-2.5 border ${errors.name ? "border-red-300" : activeField === "name" ? "border-[#1e3a8a]" : "border-gray-300"} rounded-md shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-0 focus:border-[#1e3a8a] sm:text-sm`}
-                    />
-                  </div>
-                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                    <User className="h-4 w-4 mr-2" />
+                    Usuario
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUserType("professional")}
+                    className={`flex items-center justify-center py-2.5 px-4 text-sm font-medium ${
+                      userType === "professional"
+                        ? "bg-[#1e3a8a] text-white"
+                        : "bg-white text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    <Briefcase className="h-4 w-4 mr-2" />
+                    Profesional
+                  </button>
                 </div>
 
-                <div className="space-y-1">
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                    Correo electrónico
-                  </label>
-                  <div
-                    className={`relative rounded-md shadow-sm ${errors.email ? "ring-1 ring-red-500" : activeField === "email" ? "ring-1 ring-[#1e3a8a]" : ""}`}
-                  >
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className={`h-4 w-4 ${activeField === "email" ? "text-[#1e3a8a]" : "text-gray-400"}`} />
+                {userType === "user" ? (
+                  // Formulario para usuarios
+                  <>
+                    <div className="space-y-1">
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                        Nombre completo
+                      </label>
+                      <div
+                        className={`relative rounded-md shadow-sm ${errors.name ? "ring-1 ring-red-500" : activeField === "name" ? "ring-1 ring-[#1e3a8a]" : ""}`}
+                      >
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <User className={`h-4 w-4 ${activeField === "name" ? "text-[#1e3a8a]" : "text-gray-400"}`} />
+                        </div>
+                        <input
+                          id="name"
+                          name="name"
+                          placeholder="Juan Pérez"
+                          value={formData.name}
+                          onChange={handleChange}
+                          onFocus={() => handleFocus("name")}
+                          onBlur={handleBlur}
+                          disabled={isSubmitting}
+                          className={`block w-full pl-9 pr-3 py-2.5 border ${errors.name ? "border-red-300" : activeField === "name" ? "border-[#1e3a8a]" : "border-gray-300"} rounded-md shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-0 focus:border-[#1e3a8a] sm:text-sm`}
+                        />
+                      </div>
+                      {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                     </div>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="juan@ejemplo.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("email")}
-                      onBlur={handleBlur}
-                      disabled={isSubmitting}
-                      autoComplete="off"
-                      // Agrega estos atributos adicionales:
-                      autoCorrect="off"
-                      autoCapitalize="off"
-                      spellCheck="false"
-                      // Nombre aleatorio para engañar al navegador:
-                      className={`block w-full pl-9 pr-3 py-2.5 border ${errors.email ? "border-red-300" : activeField === "email" ? "border-[#1e3a8a]" : "border-gray-300"} rounded-md shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-0 focus:border-[#1e3a8a] sm:text-sm`}
-                    />
-                  </div>
-                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-                </div>
 
+                    <div className="space-y-1">
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        Correo electrónico
+                      </label>
+                      <div
+                        className={`relative rounded-md shadow-sm ${errors.email ? "ring-1 ring-red-500" : activeField === "email" ? "ring-1 ring-[#1e3a8a]" : ""}`}
+                      >
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Mail className={`h-4 w-4 ${activeField === "email" ? "text-[#1e3a8a]" : "text-gray-400"}`} />
+                        </div>
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="juan@ejemplo.com"
+                          value={formData.email}
+                          onChange={handleChange}
+                          onFocus={() => handleFocus("email")}
+                          onBlur={handleBlur}
+                          disabled={isSubmitting}
+                          autoComplete="off"
+                          autoCorrect="off"
+                          autoCapitalize="off"
+                          spellCheck="false"
+                          className={`block w-full pl-9 pr-3 py-2.5 border ${errors.email ? "border-red-300" : activeField === "email" ? "border-[#1e3a8a]" : "border-gray-300"} rounded-md shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-0 focus:border-[#1e3a8a] sm:text-sm`}
+                        />
+                      </div>
+                      {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                    </div>
+                  </>
+                ) : (
+                  // Formulario para profesionales
+                  <>
+                    <div className="space-y-1">
+                      <label htmlFor="professionalName" className="block text-sm font-medium text-gray-700">
+                        Nombre profesional completo
+                      </label>
+                      <div
+                        className={`relative rounded-md shadow-sm ${errors.professionalName ? "ring-1 ring-red-500" : activeField === "professionalName" ? "ring-1 ring-[#1e3a8a]" : ""}`}
+                      >
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <User className={`h-4 w-4 ${activeField === "professionalName" ? "text-[#1e3a8a]" : "text-gray-400"}`} />
+                        </div>
+                        <input
+                          id="professionalName"
+                          name="professionalName"
+                          placeholder="Dr. Juan Pérez"
+                          value={formData.professionalName}
+                          onChange={handleChange}
+                          onFocus={() => handleFocus("professionalName")}
+                          onBlur={handleBlur}
+                          disabled={isSubmitting}
+                          className={`block w-full pl-9 pr-3 py-2.5 border ${errors.professionalName ? "border-red-300" : activeField === "professionalName" ? "border-[#1e3a8a]" : "border-gray-300"} rounded-md shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-0 focus:border-[#1e3a8a] sm:text-sm`}
+                        />
+                      </div>
+                      {errors.professionalName && <p className="text-red-500 text-xs mt-1">{errors.professionalName}</p>}
+                    </div>
+
+                    <div className="space-y-1">
+                      <label htmlFor="professionalEmail" className="block text-sm font-medium text-gray-700">
+                        Correo electrónico profesional
+                      </label>
+                      <div
+                        className={`relative rounded-md shadow-sm ${errors.professionalEmail ? "ring-1 ring-red-500" : activeField === "professionalEmail" ? "ring-1 ring-[#1e3a8a]" : ""}`}
+                      >
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Mail className={`h-4 w-4 ${activeField === "professionalEmail" ? "text-[#1e3a8a]" : "text-gray-400"}`} />
+                        </div>
+                        <input
+                          id="professionalEmail"
+                          name="professionalEmail"
+                          type="email"
+                          placeholder="dr.juan@clinica.com"
+                          value={formData.professionalEmail}
+                          onChange={handleChange}
+                          onFocus={() => handleFocus("professionalEmail")}
+                          onBlur={handleBlur}
+                          disabled={isSubmitting}
+                          autoComplete="off"
+                          autoCorrect="off"
+                          autoCapitalize="off"
+                          spellCheck="false"
+                          className={`block w-full pl-9 pr-3 py-2.5 border ${errors.professionalEmail ? "border-red-300" : activeField === "professionalEmail" ? "border-[#1e3a8a]" : "border-gray-300"} rounded-md shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-0 focus:border-[#1e3a8a] sm:text-sm`}
+                        />
+                      </div>
+                      {errors.professionalEmail && <p className="text-red-500 text-xs mt-1">{errors.professionalEmail}</p>}
+                    </div>
+                  </>
+                )}
+
+                {/* Campos comunes para ambos tipos de usuario */}
                 <div className="space-y-1">
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                     Contraseña
@@ -334,7 +469,11 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-2.5 px-4 rounded-md bg-[#10b981] text-white font-medium hover:bg-[#10b981]/90 transition-colors focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                    className={`w-full py-2.5 px-4 rounded-md ${
+                      userType === "user" 
+                        ? "bg-[#10b981] hover:bg-[#10b981]/90 focus:ring-[#10b981]" 
+                        : "bg-[#10b981] hover:bg-[#10b981]/90 focus:ring-[#10b981]"
+                    } text-white font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed`}
                   >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center">
@@ -361,7 +500,7 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
                         Procesando...
                       </span>
                     ) : (
-                      "Registrarse"
+                      userType === "user" ? "Registrarse" : "Registrarse como profesional"
                     )}
                   </button>
                 </div>
@@ -369,7 +508,7 @@ export default function RegistrationModal({ isOpen, setIsOpen }: RegistrationMod
             )}
 
             <div className="mt-4 text-center text-sm text-gray-600">
-              ¿Ya tienes una cuenta?{" "}
+              ¿Ya tienes una cuenta{userType === "professional" ? " profesional" : ""}?{" "}
               <button className="text-[#1e3a8a] font-medium hover:underline focus:outline-none">Iniciar sesión</button>
             </div>
           </div>

@@ -16,3 +16,18 @@ export const createProfessional = async (form: Professional) => {
     return error;
   }
 };
+
+export const getProfessionalInfo = async (id: string) => {
+  try {
+    const response = await fetch(`${APP_URL}/profesionals/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+    return response.json();
+  } catch (error) {
+    return error;
+  }
+};
