@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import Button from "./ui/button"
 import { User, LogOut, Menu, X, Settings, UserCircle } from "lucide-react"
-import RegistrationModal from "./Modals/CreateUser"
+import RegistrationModal from "./Modals/Create"
 import Login from "./Modals/Login"
 import { useAuth } from "@/context/AuthContext"
 

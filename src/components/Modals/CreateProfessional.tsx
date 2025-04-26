@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import type React from "react"
-import { X, Shield, Check, User, Mail, Lock, Eye, EyeOff } from "lucide-react"
+import { X, Shield, Check, User, Mail, Lock, Eye, EyeOff, Phone } from "lucide-react"
 import { createProfessional } from "@/services/professionals"
 
 interface RegistrationModalProps {
@@ -13,6 +13,7 @@ export default function RegistrationModalProfessional({ isOpen, setIsOpen }: Reg
     const [formData, setFormData] = useState({
         name: "",
         email: "",
+        phoneNumber: "",
         password: "",
         confirmPassword: "",
     })
@@ -78,6 +79,7 @@ export default function RegistrationModalProfessional({ isOpen, setIsOpen }: Reg
             const response = await createProfessional({
                 profesionalname: formData.name,
                 email: formData.email,
+                phoneNumber: formData.phoneNumber,
                 password: formData.password,
             })
 
@@ -104,6 +106,7 @@ export default function RegistrationModalProfessional({ isOpen, setIsOpen }: Reg
         setFormData({
             name: "",
             email: "",
+            phoneNumber: "",
             password: "",
             confirmPassword: "",
         })
@@ -236,6 +239,36 @@ export default function RegistrationModalProfessional({ isOpen, setIsOpen }: Reg
                                         />
                                     </div>
                                     {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+                                        Teléfono
+                                    </label>
+                                    <div
+                                        className={`relative rounded-md shadow-sm ${errors.phoneNumber ? "ring-1 ring-red-500" : activeField === "phoneNumber" ? "ring-1 ring-[#1e3a8a]" : ""}`}
+                                    >
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Phone className={`h-4 w-4 ${activeField === "phoneNumber" ? "text-[#1e3a8a]" : "text-gray-400"}`} />
+                                        </div>
+                                        <input
+                                            id="phoneNumber"
+                                            name="phoneNumber"
+                                            type="tel"
+                                            placeholder="+52 55 1234 5678"
+                                            value={formData.phoneNumber}
+                                            onChange={handleChange}
+                                            onFocus={() => handleFocus("phoneNumber")}
+                                            onBlur={handleBlur}
+                                            disabled={isSubmitting}
+                                            autoComplete="off"
+                                            autoCorrect="off"
+                                            autoCapitalize="off"
+                                            spellCheck="false"
+                                            className={`block w-full pl-9 pr-3 py-2.5 border ${errors.phoneNumber ? "border-red-300" : activeField === "phoneNumber" ? "border-[#1e3a8a]" : "border-gray-300"} rounded-md shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-0 focus:border-[#1e3a8a] sm:text-sm`}
+                                        />
+                                    </div>
+                                    {errors.phoneNumber && <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>}
                                 </div>
 
                                 <div className="space-y-1">
