@@ -31,3 +31,33 @@ export const getProfessionalInfo = async (id: string) => {
     return error;
   }
 };
+
+export const getProfessionalDocuments = async (id: string) => {
+  try {
+    const response = await fetch(`${APP_URL}/profesionales/${id}/documentos`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+    return response.json();
+  } catch (error) {
+    return error;
+  }
+};
+
+export const uploadProfessionalDocument = async (id: string, formData: FormData) => {
+  try {
+    const response = await fetch(`${APP_URL}/profesionales/${id}/documentos`, {
+      method: "POST",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: formData,
+    });
+    return response.json();
+  } catch (error) {
+    return error;
+  }
+};

@@ -2,12 +2,11 @@
 
 import { useAuth } from "@/context/AuthContext";
 import UserView from "./User";
-import ProfessionalView from "./Professional";
+import ProfessionalView from "./Professional/Professional";
 
 export default function Perfil() {
     const { user, userId } = useAuth();    
-    console.log(userId)
-    
+
     return (
         <div>
             {user?.role === "user" 
