@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
-import RegistrationModal from "@/components/Modals/CreateUser"
+import RegistrationModal from "@/components/Modals/Create"
 import RegistrationModalProfessional from "@/components/Modals/CreateProfessional"
 import Login from "@/components/Modals/Login"
 import Button from "@/components/ui/button"
