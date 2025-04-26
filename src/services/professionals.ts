@@ -1,4 +1,7 @@
-import { Professional } from "../utils/interfaces/professionalInterfaces";
+import {
+  Professional,
+  UpdateProfessionalBasicInfo,
+} from "../utils/interfaces/professionalInterfaces";
 const APP_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const createProfessional = async (form: Professional) => {
@@ -47,7 +50,10 @@ export const getProfessionalDocuments = async (id: string) => {
   }
 };
 
-export const uploadProfessionalDocument = async (id: string, formData: FormData) => {
+export const uploadProfessionalDocument = async (
+  id: string,
+  formData: FormData
+) => {
   try {
     const response = await fetch(`${APP_URL}/profesionales/${id}/documentos`, {
       method: "POST",
@@ -55,6 +61,25 @@ export const uploadProfessionalDocument = async (id: string, formData: FormData)
         "Access-Control-Allow-Origin": "*",
       },
       body: formData,
+    });
+    return response.json();
+  } catch (error) {
+    return error;
+  }
+};
+
+export const updateProfessionalInfo = async (
+  id: string,
+  form: UpdateProfessionalBasicInfo
+) => {
+  try {
+    const response = await fetch(`${APP_URL}/profesionals/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify(form),
     });
     return response.json();
   } catch (error) {

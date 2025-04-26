@@ -160,12 +160,6 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
                             </div>
                         </div>
 
-                        {/* Botón de editar perfil */}
-                        <div className="mt-6 w-full px-4">
-                            <button className="w-full bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors">
-                                Editar Perfil
-                            </button>
-                        </div>
                     </div>
 
                     {/* Columna derecha - Contenido principal */}
@@ -221,7 +215,7 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
                             <div className="mt-4">
                                 {/* Info tab */}
                                 {activeTab === "info" && (
-                                    <ProfesionalInfo professionalInfo={professionalInfo}
+                                    <ProfesionalInfo refetch={handleGetInfo} professionalInfo={professionalInfo}
                                     />
                                 )}
 
