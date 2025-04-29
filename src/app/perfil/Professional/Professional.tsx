@@ -34,11 +34,12 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
     const [documentsErrors, setDocumentsErrors] = useState<number>(0)
     const [isLoading, setIsLoading] = useState(true)
     const [activeTab, setActiveTab] = useState("info")
+    const token = localStorage.getItem('tokenK')
 
     const handleGetInfo = async () => {
         try {
             setIsLoading(true)
-            const response = await getProfessionalInfo(id!)
+            const response = await getProfessionalInfo(id!, token ?? "")
             setProfessionalInfo(response.data)
         } catch (error) {
             console.error(error)
@@ -49,9 +50,8 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
 
     const handleGetDocuments = async () => {
         try {
-          const response = await getProfessionalDocuments(id!);
+          const response = await getProfessionalDocuments(id!, token ?? "");
           
-          // Si no hay respuesta o no es un array, considerar todos los documentos como faltantes
           if (!Array.isArray(response)) {
             setDocumentsErrors(Object.keys(documentTypes).length);
             return;

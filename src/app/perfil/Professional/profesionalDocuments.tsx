@@ -28,7 +28,8 @@ export interface Document {
     fecha_subida: string | Date
 }
 
-export default function ProfessionalDocuments({ id}: ProfessionalDocumentsViewProps) {
+export default function ProfessionalDocuments({ id }: ProfessionalDocumentsViewProps) {
+    const token = localStorage.getItem('tokenK')
     const [documents, setDocuments] = useState<Document[]>([])
     const [selectedDocument, setSelectedDocument] = useState<string | null>(null)
     const [documentName, setDocumentName] = useState<string | null>(null)
@@ -41,10 +42,10 @@ export default function ProfessionalDocuments({ id}: ProfessionalDocumentsViewPr
 
     const handleGetDocuments = async () => {
         try {
-            const response = await getProfessionalDocuments(id!)
+            const response = await getProfessionalDocuments(id!, token ?? "")
             const docs = Array.isArray(response) ? response : []
             setDocuments(docs)
-    
+
             const existingTypes = docs.map((doc: Document) => doc.tipo)
             const missing = (Object.keys(documentTypes) as DocumentType[]).filter(
                 (type) => !existingTypes.includes(type)
@@ -116,7 +117,7 @@ export default function ProfessionalDocuments({ id}: ProfessionalDocumentsViewPr
             formData.append('file', selectedFile)
             formData.append('tipo', showUploadModal)
 
-            await uploadProfessionalDocument(id, formData)
+            await uploadProfessionalDocument(id, formData, token ?? "")
             await handleGetDocuments()
             handleCloseModal()
         } catch (error) {

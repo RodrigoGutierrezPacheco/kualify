@@ -20,13 +20,14 @@ export const createProfessional = async (form: Professional) => {
   }
 };
 
-export const getProfessionalInfo = async (id: string) => {
+export const getProfessionalInfo = async (id: string, token: string) => {
   try {
     const response = await fetch(`${APP_URL}/profesionals/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.json();
@@ -35,13 +36,14 @@ export const getProfessionalInfo = async (id: string) => {
   }
 };
 
-export const getProfessionalDocuments = async (id: string) => {
+export const getProfessionalDocuments = async (id: string, token: string) => {
   try {
     const response = await fetch(`${APP_URL}/profesionales/${id}/documentos`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.json();
@@ -52,13 +54,15 @@ export const getProfessionalDocuments = async (id: string) => {
 
 export const uploadProfessionalDocument = async (
   id: string,
-  formData: FormData
+  formData: FormData,
+  token: string
 ) => {
   try {
     const response = await fetch(`${APP_URL}/profesionales/${id}/documentos`, {
       method: "POST",
       headers: {
         "Access-Control-Allow-Origin": "*",
+        Authorization: `Bearer ${token}`,
       },
       body: formData,
     });
@@ -70,7 +74,8 @@ export const uploadProfessionalDocument = async (
 
 export const updateProfessionalInfo = async (
   id: string,
-  form: UpdateProfessionalBasicInfo
+  form: UpdateProfessionalBasicInfo,
+  token: string
 ) => {
   try {
     const response = await fetch(`${APP_URL}/profesionals/${id}`, {
@@ -78,6 +83,7 @@ export const updateProfessionalInfo = async (
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(form),
     });

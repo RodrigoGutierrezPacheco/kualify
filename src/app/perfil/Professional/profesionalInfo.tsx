@@ -1,8 +1,9 @@
 "use client"
 
-import { UserCheck, Mail, Phone, MapPin, Save, CheckCircle, X, Edit2 } from 'lucide-react'
+import { UserCheck, Mail, Phone, Save, CheckCircle, X, Edit2 } from 'lucide-react'
 import { useState, useRef, useEffect } from "react"
 import { updateProfessionalInfo } from '@/services/professionals'
+import SelectCiudadesEstados from '@/components/ui/selectCiudadesEstados'
 
 export interface ProfessionalInfo {
     professionalInfo: {
@@ -11,24 +12,26 @@ export interface ProfessionalInfo {
         profesionalname: string
         phoneNumber: string
         auditado: boolean
-        estado?: string
+        estado?: string | undefined
         ciudad?: string
     }
     refetch: () => void
 }
 
 export default function ProfesionalInfo({ professionalInfo, refetch }: ProfessionalInfo) {
+    const token = localStorage.getItem('tokenK')
     const [isEditing, setIsEditing] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false)
     const [showError, setShowError] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
     const formRef = useRef<HTMLFormElement>(null)
-
     const [formData, setFormData] = useState({
         profesionalname: professionalInfo.profesionalname,
         email: professionalInfo.email,
         phoneNumber: professionalInfo.phoneNumber || "",
+        ciudad: professionalInfo.ciudad || "",
+        estado: professionalInfo.estado || ""
     })
 
     const handleCancel = () => {
@@ -36,6 +39,8 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
             profesionalname: professionalInfo.profesionalname,
             email: professionalInfo.email,
             phoneNumber: professionalInfo.phoneNumber || "",
+            ciudad: professionalInfo.ciudad || "",
+            estado: professionalInfo.estado || ""
         })
         setErrors({})
         setIsEditing(false)
@@ -81,7 +86,7 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
         if (!validateForm()) return
 
         try {
-            const response = await updateProfessionalInfo(professionalInfo.id, formData)
+            const response = await updateProfessionalInfo(professionalInfo.id, formData, token ?? "")
 
             if (response.statusCode >= 200 && response.statusCode < 300) {
                 setShowSuccess(true)
@@ -90,7 +95,9 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                 setTimeout(() => {
                     setShowSuccess(false)
                 }, 3000)
-                refetch()
+                setTimeout(() => {
+                    refetch()
+                }, 3000)
             } else {
                 setErrorMessage(response.message || "Error al actualizar la información")
                 setShowError(true)
@@ -269,22 +276,15 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                                 {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
                             </div>
                         </div>
-
-                        <div className="space-y-1">
-                            <label htmlFor="ubicacion" className="block text-sm font-medium text-gray-700">
-                                Ubicación
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <MapPin className="h-4 w-4 text-[#1e3a8a]" />
-                                </div>
-                                <div className="w-full text-black pl-10 pr-3 py-2 border border-transparent bg-gray-50 rounded-md">
-                                    {professionalInfo.ciudad && professionalInfo.estado
-                                        ? `${professionalInfo.ciudad}, ${professionalInfo.estado}`
-                                        : "No especificada"}
-                                </div>
-                            </div>
-                        </div>
+                        <SelectCiudadesEstados userInfo={formData} onLocationChange={(ciudad, estado) => {
+                            setFormData(prev => ({
+                                ...prev,
+                                ciudad,
+                                estado: estado || prev.estado
+                            }));
+                        }}
+                        isEditing={isEditing}
+                        />
                     </div>
 
                     <div className="pt-6 mt-6 border-t">
