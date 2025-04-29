@@ -3,29 +3,15 @@
 
 import { getProfessionalDocuments, uploadProfessionalDocument } from "@/services/professionals"
 import { useEffect, useState, useRef, ChangeEvent } from "react"
-import { Eye, CheckCircle, XCircle, Upload, FileText, FileEdit } from "lucide-react"
+import { Eye, CheckCircle, XCircle, Upload, FileText, FileEdit, AlertCircle, Info } from "lucide-react"
 import ViewProfessionalDoc from "@/components/Modals/ViewProfessionalDoc"
 import UploadProfessionalDoc from "@/components/Modals/UploadProfessionalDoc"
+import { Document } from "@/utils/interfaces/documentsInterfaces"
+import { documentTypes } from "@/utils/types/documentsTypes"
+import { DocumentType } from "@/utils/interfaces/documentsInterfaces"
 
 export interface ProfessionalDocumentsViewProps {
     id: string | null
-}
-
-type DocumentType = "acta_nacimiento" | "comprobante_domicilio" | "constancia_fiscal" | "ine_pasaporte"
-
-const documentTypes: Record<DocumentType, string> = {
-    acta_nacimiento: "Acta de Nacimiento",
-    comprobante_domicilio: "Comprobante de Domicilio",
-    constancia_fiscal: "Constancia Fiscal",
-    ine_pasaporte: "INE / Pasaporte",
-}
-
-export interface Document {
-    id: string
-    tipo: DocumentType
-    url: string
-    auditado: boolean
-    fecha_subida: string | Date
 }
 
 export default function ProfessionalDocuments({ id }: ProfessionalDocumentsViewProps) {
@@ -156,13 +142,21 @@ export default function ProfessionalDocuments({ id }: ProfessionalDocumentsViewP
 
                             <div className="flex items-center gap-4">
                                 {doc.auditado ? (
+                                    // Estado 1: Documento auditado y aprobado (verificado)
                                     <span className="flex items-center text-green-600 text-sm">
                                         <CheckCircle size={16} className="mr-1" />
                                         Verificado
                                     </span>
-                                ) : (
-                                    <span className="flex items-center text-amber-500 text-sm">
+                                ) : doc.comentario ? (
+                                    // Estado 2: Documento no auditado pero tiene comentario (rechazado)
+                                    <span className="flex items-center text-red-600 text-sm">
                                         <XCircle size={16} className="mr-1" />
+                                        Rechazado
+                                    </span>
+                                ) : (
+                                    // Estado 3: Documento no auditado y sin comentario (pendiente)
+                                    <span className="flex items-center text-amber-500 text-sm">
+                                        <AlertCircle size={16} className="mr-1" />
                                         Sin Verificar
                                     </span>
                                 )}
@@ -181,6 +175,15 @@ export default function ProfessionalDocuments({ id }: ProfessionalDocumentsViewP
                                 >
                                     <FileEdit size={18} />
                                 </button>
+                                {doc.comentario && (
+                                    <div
+                                        className="flex cursor-pointer items-center text-sm text-[#1e3a8a] hover:text-[#2563eb] transition-colors p-2 rounded-full hover:bg-[#f1f5f9]"
+                                        title={doc.comentario}
+                                    >
+                                        <Info size={18} />
+                                    </div>
+
+                                )}
                             </div>
                         </div>
                     ))}

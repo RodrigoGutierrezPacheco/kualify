@@ -2,7 +2,7 @@ import { MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getAllEstados, getCiudades } from "@/services/ciudades";
 
-export interface DocumentType {
+export interface SelectCiudadesEstados {
   userInfo: {
     ciudad: string;
     estado: string;
@@ -11,7 +11,7 @@ export interface DocumentType {
   onLocationChange: (ciudad: string, estado?: string) => void;
 }
 
-export default function SelectCiudadesEstados({ userInfo, onLocationChange, isEditing }: DocumentType) {
+export default function SelectCiudadesEstados({ userInfo, onLocationChange, isEditing }: SelectCiudadesEstados) {
   const [estados, setEstados] = useState<string[]>([]);
   const [ciudades, setCiudades] = useState<string[]>([]);
   const [estadoSeleccionado, setEstadoSeleccionado] = useState(userInfo.estado || "");
@@ -114,7 +114,7 @@ export default function SelectCiudadesEstados({ userInfo, onLocationChange, isEd
             <select
               value={estadoSeleccionado}
               onChange={handleEstadoChange}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full text-black pl-10 pr-3 py-2 border border-gray-300 rounded-md appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Selecciona un estado</option>
               {estados.map((estado) => (
@@ -142,7 +142,7 @@ export default function SelectCiudadesEstados({ userInfo, onLocationChange, isEd
               <select
                 value={ciudadSeleccionada}
                 onChange={handleCiudadChange}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full text-black pl-10 pr-3 py-2 border border-gray-300 rounded-md appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Selecciona una ciudad</option>
                 {ciudades.map((ciudad) => (

@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+"use client"
 import { useEffect, useState } from "react"
 import { getProfessionalInfo } from "@/services/professionals"
 import ProfessionalStats from "./profesionalStats"
@@ -6,14 +7,17 @@ import { Mail, Star } from 'lucide-react'
 import ProfesionalInfo from "./profesionalInfo"
 import ProfessionalDocuments from "./profesionalDocuments"
 import { getProfessionalDocuments } from "@/services/professionals"
+import { Document } from "@/utils/interfaces/documentsInterfaces"
+import { DocumentType } from "@/utils/interfaces/documentsInterfaces"
+import Avatar from "@/components/ui/avata"
 
-type DocumentType = "acta_nacimiento" | "comprobante_domicilio" | "constancia_fiscal" | "ine_pasaporte"
 
 const documentTypes: Record<DocumentType, string> = {
     acta_nacimiento: "Acta de Nacimiento",
     comprobante_domicilio: "Comprobante de Domicilio",
     constancia_fiscal: "Constancia Fiscal",
     ine_pasaporte: "INE / Pasaporte",
+    profile_image: "Foto de Perfil"
 }
 
 export interface ProfessionalViewProps {
@@ -32,9 +36,14 @@ interface ProfessionalInfo {
 export default function ProfessionalView({ id }: ProfessionalViewProps) {
     const [professionalInfo, setProfessionalInfo] = useState<ProfessionalInfo | null>(null)
     const [documentsErrors, setDocumentsErrors] = useState<number>(0)
+    const [documents, setDocuments] = useState<Document[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [activeTab, setActiveTab] = useState("info")
-    const token = localStorage.getItem('tokenK')
+    const [token, setToken] = useState<string | null>(null)
+
+    useEffect(() => {
+        setToken(localStorage.getItem('tokenK'));
+    }, []);
 
     const handleGetInfo = async () => {
         try {
@@ -50,51 +59,41 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
 
     const handleGetDocuments = async () => {
         try {
-          const response = await getProfessionalDocuments(id!, token ?? "");
-          
-          if (!Array.isArray(response)) {
-            setDocumentsErrors(Object.keys(documentTypes).length);
-            return;
-          }
-      
-          // 1. Obtener tipos de documentos existentes (manejo seguro cuando response es vacío)
-          const existingTypes = response?.map((doc: { tipo: DocumentType }) => doc.tipo) || [];
-          
-          // 2. Calcular documentos faltantes (seguro contra undefined/null)
-          const missing = (Object.keys(documentTypes) as DocumentType[])
-            .filter(type => !existingTypes?.includes(type));
-          
-          // 3. Contar documentos no auditados (seguro contra response vacío)
-          const unverifiedCount = response?.filter((doc: { auditado: boolean }) => !doc.auditado).length || 0;
-          
-          // 4. Sumar documentos faltantes + no auditados
-          const totalErrors = (missing?.length || 0) + unverifiedCount;
-          
-          setDocumentsErrors(totalErrors);
-          
+            const response = await getProfessionalDocuments(id!, token ?? "");
+            setDocuments(response);
+            if (!Array.isArray(response)) {
+                setDocumentsErrors(Object.keys(documentTypes).length);
+                return;
+            }
+
+            // 1. Obtener tipos de documentos existentes (manejo seguro cuando response es vacío)
+            const existingTypes = response?.map((doc: { tipo: DocumentType }) => doc.tipo) || [];
+
+            // 2. Calcular documentos faltantes (seguro contra undefined/null)
+            const missing = (Object.keys(documentTypes) as DocumentType[])
+                .filter(type => !existingTypes?.includes(type));
+
+            // 3. Contar documentos no auditados (seguro contra response vacío)
+            const unverifiedCount = response?.filter((doc: { auditado: boolean }) => !doc.auditado).length || 0;
+
+            // 4. Sumar documentos faltantes + no auditados
+            const totalErrors = (missing?.length || 0) + unverifiedCount;
+
+            setDocumentsErrors(totalErrors);
+
         } catch (error) {
-          console.error(error);
-          // Si hay error, considerar todos los documentos como faltantes
-          setDocumentsErrors(Object.keys(documentTypes).length);
+            console.error(error);
+            // Si hay error, considerar todos los documentos como faltantes
+            setDocumentsErrors(Object.keys(documentTypes).length);
         }
-      };
+    };
 
     useEffect(() => {
-        if (id) {
+        if (id && token) {
             handleGetInfo()
             handleGetDocuments()
         }
-    }, [id])
-
-    // Obtener iniciales para el avatar
-    const getInitials = (name: string) => {
-        return name
-            .split(" ")
-            .map((part) => part.charAt(0))
-            .join("")
-            .toUpperCase()
-            .substring(0, 2)
-    }
+    }, [id, token])
 
     if (isLoading) {
         return (
@@ -125,9 +124,7 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
                     {/* Columna izquierda - Información de perfil */}
                     <div className="md:w-1/3 flex flex-col items-center justify-start pt-10">
                         {/* Avatar */}
-                        <div className="h-32 w-32 rounded-full bg-[#1e3a8a] text-white flex items-center justify-center text-3xl font-bold border-4 border-white shadow-lg">
-                            {professionalInfo.profesionalname ? getInitials(professionalInfo.profesionalname) : "?"}
-                        </div>
+                        <Avatar documents={documents} userInfo={professionalInfo} handleGetInfo={handleGetInfo} handleGetDocuments={handleGetDocuments}/>
 
                         <div className="mt-4 text-center">
                             <h2 className="text-xl font-bold text-[#1e3a8a]">{professionalInfo.profesionalname}</h2>

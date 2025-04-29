@@ -4,6 +4,8 @@ import { UserCheck, Mail, Phone, Save, CheckCircle, X, Edit2 } from 'lucide-reac
 import { useState, useRef, useEffect } from "react"
 import { updateProfessionalInfo } from '@/services/professionals'
 import SelectCiudadesEstados from '@/components/ui/selectCiudadesEstados'
+import SelectBirthDate from '@/components/ui/selectBirthDate'
+import SelectGenero from '@/components/ui/selectGenero'
 
 export interface ProfessionalInfo {
     professionalInfo: {
@@ -14,6 +16,8 @@ export interface ProfessionalInfo {
         auditado: boolean
         estado?: string | undefined
         ciudad?: string
+        fecha_nacimiento?: string
+        genero?: string
     }
     refetch: () => void
 }
@@ -31,7 +35,9 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
         email: professionalInfo.email,
         phoneNumber: professionalInfo.phoneNumber || "",
         ciudad: professionalInfo.ciudad || "",
-        estado: professionalInfo.estado || ""
+        estado: professionalInfo.estado || "",
+        fecha_nacimiento: professionalInfo.fecha_nacimiento || "",
+        genero: professionalInfo.genero || ""
     })
 
     const handleCancel = () => {
@@ -40,7 +46,9 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
             email: professionalInfo.email,
             phoneNumber: professionalInfo.phoneNumber || "",
             ciudad: professionalInfo.ciudad || "",
-            estado: professionalInfo.estado || ""
+            estado: professionalInfo.estado || "",
+            fecha_nacimiento: professionalInfo.fecha_nacimiento || "",
+            genero: professionalInfo.genero || ""
         })
         setErrors({})
         setIsEditing(false)
@@ -283,7 +291,30 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                                 estado: estado || prev.estado
                             }));
                         }}
-                        isEditing={isEditing}
+                            isEditing={isEditing}
+                        />
+
+                        <SelectBirthDate
+                            userInfo={formData}
+                            isEditing={isEditing}
+                            errors={errors}
+                            handleChange={(field, value) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    [field]: value
+                                }));
+                            }}
+                        />
+                        <SelectGenero
+                            userInfo={formData}
+                            isEditing={isEditing}
+                            errors={errors}
+                            handleChange={(field, value) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    [field]: value
+                                }));
+                            }}
                         />
                     </div>
 
