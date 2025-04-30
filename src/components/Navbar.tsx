@@ -171,7 +171,7 @@ export default function Navbar() {
                                 >
                                     {/* On larger screens show name and avatar */}
                                     <div className="hidden sm:flex items-center space-x-2">
-                                        <div className="h-8 w-8 rounded-full bg-[#1E3A8A] flex items-center justify-center text-white">
+                                        <div className="h-8 cursor-pointer w-8 rounded-full bg-[#1E3A8A] flex items-center justify-center text-white">
                                             <User className="h-5 w-5" />
                                         </div>
                                         {isSmallDesktop ? (

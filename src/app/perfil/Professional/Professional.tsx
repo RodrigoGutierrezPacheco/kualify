@@ -167,7 +167,7 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
                             <div className="flex space-x-1 rounded-lg bg-[#1e3a8a]/10 p-1">
                                 <button
                                     onClick={() => setActiveTab("info")}
-                                    className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors ${activeTab === "info"
+                                    className={`flex-1 cursor-pointer py-2 px-3 text-sm font-medium rounded-md transition-colors ${activeTab === "info"
                                         ? "bg-[#1e3a8a] text-white"
                                         : "text-gray-700 hover:bg-[#1e3a8a]/20"
                                         }`}
@@ -185,7 +185,7 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
                                 </button> */}
                                 <button
                                     onClick={() => setActiveTab("services")}
-                                    className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors ${activeTab === "services"
+                                    className={`flex-1 cursor-pointer py-2 px-3 text-sm font-medium rounded-md transition-colors ${activeTab === "services"
                                         ? "bg-[#1e3a8a] text-white"
                                         : "text-gray-700 hover:bg-[#1e3a8a]/20"
                                         }`}
@@ -194,7 +194,7 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
                                 </button>
                                 <button
                                     onClick={() => setActiveTab("documentos")}
-                                    className={`flex items-center justify-center gap-2 flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors ${activeTab === "documentos"
+                                    className={`flex cursor-pointer items-center justify-center gap-2 flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors ${activeTab === "documentos"
                                         ? "bg-[#1e3a8a] text-white"
                                         : "text-gray-700 hover:bg-[#1e3a8a]/20"
                                         }`}

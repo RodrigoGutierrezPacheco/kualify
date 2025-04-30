@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
 import { UserCheck, Mail, Phone, Save, CheckCircle, X, Edit2 } from 'lucide-react'
@@ -80,13 +81,37 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
             newErrors.email = "Email inválido"
         }
 
-        if (formData.phoneNumber && !/^\d{10}$/.test(formData.phoneNumber.replace(/\D/g, ''))) {
-            newErrors.phone = "Formato de teléfono inválido"
+        const phoneDigits = formData.phoneNumber?.replace(/\D/g, '') || '';
+
+        if (!formData.phoneNumber) {
+            newErrors.phone = "El teléfono es obligatorio";
+        } else if (phoneDigits.length !== 10) {
+            newErrors.phone = "El teléfono debe tener 10 dígitos";
+        } else if (!/^\d+$/.test(phoneDigits)) {
+            newErrors.phone = "Formato de teléfono inválido";
+        }
+
+        if (!formData.ciudad) {
+            newErrors.ciudad = "La ciudad es obligatoria"
+        }
+
+        if (!formData.estado) {
+            newErrors.estado = "El estado es obligatorio"
+        }
+        if (!formData.fecha_nacimiento) {
+            newErrors.fecha_nacimiento = "La fecha de nacimiento es obligatoria"
+        }
+        if (!formData.genero) {
+            newErrors.genero = "El genero es obligatorio"
         }
 
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
     }
+
+    useEffect(() => {
+        validateForm()
+    }, [formData])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -146,7 +171,6 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
         return () => {
             document.removeEventListener("mousedown", handleClickOutside)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isEditing, formData, professionalInfo])
 
     return (
@@ -215,6 +239,7 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Campo Nombre */}
                         <div className="space-y-1">
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                                 Nombre
@@ -224,24 +249,31 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                                     <UserCheck className="h-4 w-4 text-[#1e3a8a]" />
                                 </div>
                                 {isEditing ? (
-                                    <input
-                                        id="name"
-                                        type="text"
-                                        name="profesionalname"
-                                        value={formData.profesionalname}
-                                        onChange={handleChange}
-                                        className={`w-full text-black pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-[#1e3a8a]/30 focus:border-[#1e3a8a] transition-colors ${errors.name ? "border-red-300 bg-red-50" : "border-gray-300"
-                                            }`}
-                                    />
+                                    <div>
+                                        <input
+                                            id="name"
+                                            type="text"
+                                            name="profesionalname"
+                                            value={formData.profesionalname}
+                                            onChange={handleChange}
+                                            className={`w-full text-black pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-[#1e3a8a]/30 focus:border-[#1e3a8a] transition-colors ${errors.name ? "border-red-300 bg-red-50" : "border-gray-300"
+                                                }`}
+                                        />
+                                        {errors.name && (
+                                            <p className="absolute mt-1 text-xs text-red-500">
+                                                {errors.name}
+                                            </p>
+                                        )}
+                                    </div>
                                 ) : (
                                     <div className="w-full pl-10 pr-3 py-2 border border-transparent text-black bg-gray-50 rounded-md">
                                         {formData.profesionalname}
                                     </div>
                                 )}
-                                {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
                             </div>
                         </div>
 
+                        {/* Campo Email */}
                         <div className="space-y-1">
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                 Email
@@ -253,10 +285,15 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                                 <div className="w-full pl-10 text-black pr-3 py-2 border border-transparent bg-gray-50 rounded-md">
                                     {formData.email}
                                 </div>
-                                {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+                                {errors.email && (
+                                    <p className="absolute mt-1 text-xs text-red-500">
+                                        {errors.email}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
+                        {/* Campo Teléfono */}
                         <div className="space-y-1">
                             <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                                 Teléfono
@@ -266,32 +303,43 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                                     <Phone className="h-4 w-4 text-[#1e3a8a]" />
                                 </div>
                                 {isEditing ? (
-                                    <input
-                                        id="phone"
-                                        type="tel"
-                                        name="phoneNumber"
-                                        value={formData.phoneNumber}
-                                        onChange={handleChange}
-                                        placeholder="10 dígitos"
-                                        className={`w-full text-black pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-[#1e3a8a]/30 focus:border-[#1e3a8a] transition-colors ${errors.phone ? "border-red-300 bg-red-50" : "border-gray-300"
-                                            }`}
-                                    />
+                                    <div>
+                                        <input
+                                            id="phone"
+                                            type="tel"
+                                            name="phoneNumber"
+                                            value={formData.phoneNumber}
+                                            onChange={handleChange}
+                                            placeholder="10 dígitos"
+                                            className={`w-full text-black pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-[#1e3a8a]/30 focus:border-[#1e3a8a] transition-colors ${errors.phone ? "border-red-300 bg-red-50" : "border-gray-300"
+                                                }`}
+                                        />
+                                        {errors.phone && (
+                                            <p className="absolute mt-1 text-xs text-red-500">
+                                                {errors.phone}
+                                            </p>
+                                        )}
+                                    </div>
                                 ) : (
                                     <div className="w-full text-black pl-10 pr-3 py-2 border border-transparent bg-gray-50 rounded-md">
                                         {formData.phoneNumber || "No especificado"}
                                     </div>
                                 )}
-                                {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
                             </div>
                         </div>
-                        <SelectCiudadesEstados userInfo={formData} onLocationChange={(ciudad, estado) => {
-                            setFormData(prev => ({
-                                ...prev,
-                                ciudad,
-                                estado: estado || prev.estado
-                            }));
-                        }}
+
+                        {/* Resto de los componentes */}
+                        <SelectCiudadesEstados
+                            userInfo={formData}
+                            onLocationChange={(ciudad, estado) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    ciudad,
+                                    estado: estado || prev.estado
+                                }));
+                            }}
                             isEditing={isEditing}
+                            errors={errors}
                         />
 
                         <SelectBirthDate
@@ -305,6 +353,7 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                                 }));
                             }}
                         />
+
                         <SelectGenero
                             userInfo={formData}
                             isEditing={isEditing}
