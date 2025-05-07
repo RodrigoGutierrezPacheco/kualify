@@ -150,7 +150,7 @@ export default function SelectCiudadesEstados({ userInfo, onLocationChange, isEd
           <label className="block text-sm font-medium text-gray-700">Ciudad</label>
           <div className="relative pb-5"> {/* Añadido pb-5 para espacio del error */}
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <MapPin className="h-4 w-4 text-[#1e3a8a]" />
+              <MapPin className="h-4 w-4 mb-5 text-[#1e3a8a]" />
             </div>
             {loadingCiudades ? (
               <div className="w-full text-black pl-10 pr-3 py-2 border border-gray-300 rounded-md bg-gray-50">

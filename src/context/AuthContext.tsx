@@ -8,6 +8,8 @@ interface User {
   email: string;
   id: string | { id: string };
   role: 'user' | 'professional' | 'admin';
+  exp: number;
+  iat: number;
 }
 
 interface NormalizedUser {
@@ -34,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Normaliza el usuario y extrae el ID
   const normalizeUser = (user: User | null): { normalizedUser: NormalizedUser | null, userId: string | null } => {
     if (!user) return { normalizedUser: null, userId: null };
-    
+
     const userId = typeof user.id === 'object' ? user.id.id : user.id;
     return {
       normalizedUser: {
@@ -63,6 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
     setRawUser(null);
     localStorage.removeItem('tokenK');
+    window.location.href = "/";
   };
 
   useEffect(() => {
@@ -70,6 +73,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (storedToken) {
       try {
         const decoded = jwtDecode<User>(storedToken);
+        const currentTime = Date.now() / 1000;
+        
+        if (decoded.exp && currentTime > decoded.exp) {
+          logout(); // Token expirado
+          return;
+        }
+  
         setToken(storedToken);
         setRawUser(decoded);
       } catch (error) {
@@ -82,7 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value: AuthContextType = {
     token,
     user,
-    userId, 
+    userId,
     login,
     logout,
     isAuthenticated: !!token,

@@ -7,6 +7,7 @@ import { updateProfessionalInfo } from '@/services/professionals'
 import SelectCiudadesEstados from '@/components/ui/selectCiudadesEstados'
 import SelectBirthDate from '@/components/ui/selectBirthDate'
 import SelectGenero from '@/components/ui/selectGenero'
+import AddSpecialtiesModal from './adminEspecialidates'
 
 export interface ProfessionalInfo {
     professionalInfo: {
@@ -19,12 +20,14 @@ export interface ProfessionalInfo {
         ciudad?: string
         fecha_nacimiento?: string
         genero?: string
+        especialidades?: string[]
     }
     refetch: () => void
 }
 
 export default function ProfesionalInfo({ professionalInfo, refetch }: ProfessionalInfo) {
     const token = localStorage.getItem('tokenK')
+    const [isOpenEspecialidad, setIsOpenEspecialidad] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false)
     const [showError, setShowError] = useState(false)
@@ -128,9 +131,9 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                 setTimeout(() => {
                     setShowSuccess(false)
                 }, 3000)
-                setTimeout(() => {
-                    refetch()
-                }, 3000)
+                // setTimeout(() => {
+                //     refetch()
+                // }, 3000)
             } else {
                 setErrorMessage(response.message || "Error al actualizar la información")
                 setShowError(true)
@@ -175,7 +178,7 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
 
     return (
         <div className="bg-white rounded-lg border shadow-sm">
-            <form ref={formRef} onSubmit={handleSubmit} className="relative">
+            <div className="relative">
                 {/* Mensaje de éxito */}
                 {showSuccess && (
                     <div className="absolute top-0 left-0 right-0 bg-green-50 text-green-700 p-3 rounded-t-lg flex items-center justify-between border-b border-green-200">
@@ -373,22 +376,21 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                             {!isEditing && (
                                 <button
                                     type="button"
-                                    className="text-xs text-[#1e3a8a] hover:text-[#2563eb] transition-colors"
+                                    className="cursor-pointer text-xs text-[#1e3a8a] hover:text-[#2563eb] transition-colors"
+                                    onClick={() => {
+                                        setIsOpenEspecialidad(true)
+                                    }}
                                 >
                                     Administrar
                                 </button>
                             )}
                         </div>
                         <div className="flex flex-wrap gap-2">
-                            <span className="inline-flex items-center rounded-md border border-[#1e3a8a]/30 bg-[#1e3a8a]/10 px-2 py-1 text-xs font-medium text-[#1e3a8a]">
-                                Desarrollo Web
-                            </span>
-                            <span className="inline-flex items-center rounded-md border border-[#1e3a8a]/30 bg-[#1e3a8a]/10 px-2 py-1 text-xs font-medium text-[#1e3a8a]">
-                                UX/UI
-                            </span>
-                            <span className="inline-flex items-center rounded-md border border-[#1e3a8a]/30 bg-[#1e3a8a]/10 px-2 py-1 text-xs font-medium text-[#1e3a8a]">
-                                React
-                            </span>
+                            {professionalInfo?.especialidades?.map((especialidad, index) => (
+                                <span key={index} className="inline-flex items-center rounded-md border border-[#1e3a8a]/30 bg-[#1e3a8a]/10 px-2 py-1 text-xs font-medium text-[#1e3a8a]">
+                                    {especialidad}
+                                </span>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -396,6 +398,7 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                 {isEditing && (
                     <div className="px-6 pb-6">
                         <button
+                            onClick={handleSubmit}
                             type="submit"
                             className="w-full flex items-center justify-center gap-2 bg-[#1e3a8a] hover:bg-[#2563eb] text-white py-2.5 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
                         >
@@ -404,7 +407,15 @@ export default function ProfesionalInfo({ professionalInfo, refetch }: Professio
                         </button>
                     </div>
                 )}
-            </form>
+                {isOpenEspecialidad && (
+                    <AddSpecialtiesModal
+                        onClose={() => setIsOpenEspecialidad(false)}
+                        onSuccess={() => refetch()}
+                        professionalId={professionalInfo?.id}
+                        especialidades={professionalInfo?.especialidades ?? []}
+                    />
+                )}
+            </div>
         </div>
     )
 }

@@ -92,3 +92,23 @@ export const updateProfessionalInfo = async (
     return error;
   }
 };
+
+export const asignarEspecialidad = async (especialidades: string[], profesionalId:string,token:string) => {
+  try {
+    const response = await fetch(
+      `${APP_URL}/profesionals/${profesionalId}/especialidades`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(especialidades),
+      }
+    );
+    return response.json();
+  } catch (error) {
+    return error;
+  }
+};

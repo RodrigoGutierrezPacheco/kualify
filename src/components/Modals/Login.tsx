@@ -4,6 +4,7 @@ import type React from "react"
 import { X, Shield, Mail, Lock, Eye, EyeOff, User, Briefcase } from "lucide-react"
 import { loginProfessional, loginUser } from "@/services/auth"
 import { useAuth } from "@/context/AuthContext"
+import { useRouter } from "next/navigation"
 
 interface LoginModalProps {
   isOpen: boolean
@@ -11,6 +12,7 @@ interface LoginModalProps {
 }
 
 export default function Login({ isOpen, setIsOpen }: LoginModalProps) {
+  const router = useRouter()
   const { login } = useAuth();
   const [loginType, setLoginType] = useState<"user" | "professional">("user")
   const [formData, setFormData] = useState({
@@ -77,7 +79,7 @@ export default function Login({ isOpen, setIsOpen }: LoginModalProps) {
         login(response.access_token); // <-- Esto reemplaza el localStorage.setItem
         // Cierra el modal y redirige
         setIsOpen(false);
-        // window.location.href = "/";
+        router.push("/perfil");
       } else {
         setErrors((prev) => ({ ...prev, form: response.message || "Credenciales incorrectas" }));
       }

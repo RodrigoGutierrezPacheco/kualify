@@ -30,7 +30,6 @@ interface ProfessionalInfo {
     profesionalname: string;
     phoneNumber: string;
     auditado: boolean;
-    // Puedes añadir más campos según tu API
 }
 
 export default function ProfessionalView({ id }: ProfessionalViewProps) {
@@ -83,7 +82,6 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
 
         } catch (error) {
             console.error(error);
-            // Si hay error, considerar todos los documentos como faltantes
             setDocumentsErrors(Object.keys(documentTypes).length);
         }
     };
@@ -113,6 +111,7 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
 
     return (
         <div className="">
+
             {/* Cabecera con gradiente */}
             <div className="bg-gradient-to-r from-[#1e3a8a] to-[#2563eb]  p-6 text-white">
                 <h1 className="text-2xl font-bold">Perfil Profesional</h1>
@@ -124,7 +123,7 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
                     {/* Columna izquierda - Información de perfil */}
                     <div className="md:w-1/3 flex flex-col items-center justify-start pt-10">
                         {/* Avatar */}
-                        <Avatar documents={documents} userInfo={professionalInfo} handleGetInfo={handleGetInfo} handleGetDocuments={handleGetDocuments}/>
+                        <Avatar documents={documents} userInfo={professionalInfo} handleGetInfo={handleGetInfo} handleGetDocuments={handleGetDocuments} />
 
                         <div className="mt-4 text-center">
                             <h2 className="text-xl font-bold text-[#1e3a8a]">{professionalInfo.profesionalname}</h2>
@@ -155,6 +154,7 @@ export default function ProfessionalView({ id }: ProfessionalViewProps) {
                                 </div>
                                 <span className="ml-2 text-sm font-bold text-black">5.0</span>
                             </div>
+
                         </div>
 
                     </div>
