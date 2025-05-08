@@ -1,7 +1,7 @@
 "use client"
 
 import { useAuth } from "@/context/AuthContext";
-import UserView from "./User";
+import UserView from "./User/User";
 import ProfessionalView from "./Professional/Professional";
 
 export default function Perfil() {
