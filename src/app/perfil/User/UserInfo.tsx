@@ -2,13 +2,15 @@
 "use client"
 
 import { UserCheck, Mail, Phone, Save, CheckCircle, X, Edit2 } from 'lucide-react'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { updateUserInfo } from '@/services/users'
 import SelectCiudadesEstados from '@/components/ui/selectCiudadesEstados'
 import SelectBirthDate from '@/components/ui/selectBirthDate'
 import SelectGenero from '@/components/ui/selectGenero'
 
 export interface UserInfProps{
     userInfo:{
+        id: string
         username: string
         email: string
         phoneNumber: string
@@ -21,13 +23,13 @@ export interface UserInfProps{
 
 
 export default function UserInfo({ userInfo }: UserInfProps) {
-    // const token = localStorage.getItem('tokenK')
+    const token = localStorage.getItem('tokenK')
     const [isEditing, setIsEditing] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false)
     const [showError, setShowError] = useState(false)
-    // const [errorMessage, setErrorMessage] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
-    // const formRef = useRef<HTMLFormElement>(null)
+    const formRef = useRef<HTMLFormElement>(null)
     const [formData, setFormData] = useState({
         username: userInfo.username || "",
         email: userInfo.email || "",
@@ -113,62 +115,62 @@ export default function UserInfo({ userInfo }: UserInfProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        // if (!validateForm()) return
+        if (!validateForm()) return
 
-        // try {
-        //     const response = await updateuserInfo(userInfo.id, formData, token ?? "")
+        try {
+            const response = await updateUserInfo(userInfo?.id, formData,token ?? "")
 
-        //     if (response.statusCode >= 200 && response.statusCode < 300) {
-        //         setShowSuccess(true)
-        //         setShowError(false)
-        //         setIsEditing(false)
-        //         setTimeout(() => {
-        //             setShowSuccess(false)
-        //         }, 3000)
-        //         // setTimeout(() => {
-        //         //     refetch()
-        //         // }, 3000)
-        //     } else {
-        //         setErrorMessage(response.message || "Error al actualizar la información")
-        //         setShowError(true)
-        //         setTimeout(() => {
-        //             setShowError(false)
-        //         }, 3000)
-        //     }
-        // } catch (error) {
-        //     console.error("Error al actualizar:", error)
-        //     setErrorMessage("Error al conectar con el servidor")
-        //     setShowError(true)
-        //     setTimeout(() => {
-        //         setShowError(false)
-        //     }, 3000)
-        // }
+            if (response.statusCode >= 200 && response.statusCode < 300) {
+                setShowSuccess(true)
+                setShowError(false)
+                setIsEditing(false)
+                setTimeout(() => {
+                    setShowSuccess(false)
+                }, 3000)
+                // setTimeout(() => {
+                //     refetch()
+                // }, 3000)
+            } else {
+                setErrorMessage(response.message || "Error al actualizar la información")
+                setShowError(true)
+                setTimeout(() => {
+                    setShowError(false)
+                }, 3000)
+            }
+        } catch (error) {
+            console.error("Error al actualizar:", error)
+            setErrorMessage("Error al conectar con el servidor")
+            setShowError(true)
+            setTimeout(() => {
+                setShowError(false)
+            }, 3000)
+        }
     }
 
-    // useEffect(() => {
-    //     if (!isEditing) return
+    useEffect(() => {
+        if (!isEditing) return
 
-    //     const handleClickOutside = (event: MouseEvent) => {
-    //         if (formRef.current && !formRef.current.contains(event.target as Node)) {
-    //             if (
-    //                 formData.profesionalname !== userInfo.profesionalname ||
-    //                 formData.email !== userInfo.email ||
-    //                 formData.phoneNumber !== userInfo.phoneNumber
-    //             ) {
-    //                 if (window.confirm("¿Deseas cancelar los cambios?")) {
-    //                     handleCancel()
-    //                 }
-    //             } else {
-    //                 setIsEditing(false)
-    //             }
-    //         }
-    //     }
+        const handleClickOutside = (event: MouseEvent) => {
+            if (formRef.current && !formRef.current.contains(event.target as Node)) {
+                if (
+                    formData.username !== userInfo.username ||
+                    formData.email !== userInfo.email ||
+                    formData.phoneNumber !== userInfo.phoneNumber
+                ) {
+                    if (window.confirm("¿Deseas cancelar los cambios?")) {
+                        handleCancel()
+                    }
+                } else {
+                    setIsEditing(false)
+                }
+            }
+        }
 
-    //     document.addEventListener("mousedown", handleClickOutside)
-    //     return () => {
-    //         document.removeEventListener("mousedown", handleClickOutside)
-    //     }
-    // }, [isEditing, formData, userInfo])
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [isEditing, formData, userInfo])
 
     return (
         <div className="bg-white rounded-lg border shadow-sm">
@@ -193,10 +195,10 @@ export default function UserInfo({ userInfo }: UserInfProps) {
                 {/* Mensaje de error */}
                 {showError && (
                     <div className="absolute top-0 left-0 right-0 bg-red-50 text-red-700 p-3 rounded-t-lg flex items-center justify-between border-b border-red-200">
-                        {/* <span className="flex items-center">
+                        <span className="flex items-center">
                             <X className="h-4 w-4 mr-2" />
                             {errorMessage}
-                        </span> */}
+                        </span>
                         <button
                             type="button"
                             onClick={() => setShowError(false)}
@@ -250,7 +252,7 @@ export default function UserInfo({ userInfo }: UserInfProps) {
                                         <input
                                             id="name"
                                             type="text"
-                                            name="profesionalname"
+                                            name="username"
                                             value={formData.username}
                                             onChange={handleChange}
                                             className={`w-full text-black pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-[#1e3a8a]/30 focus:border-[#1e3a8a] transition-colors ${errors.name ? "border-red-300 bg-red-50" : "border-gray-300"
@@ -370,7 +372,7 @@ export default function UserInfo({ userInfo }: UserInfProps) {
                         <button
                             onClick={handleSubmit}
                             type="submit"
-                            className="w-full flex items-center justify-center gap-2 bg-[#1e3a8a] hover:bg-[#2563eb] text-white py-2.5 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
+                            className="w-full cursor-pointer flex items-center justify-center gap-2 bg-[#1e3a8a] hover:bg-[#2563eb] text-white py-2.5 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
                         >
                             <Save size={16} />
                             Guardar Cambios

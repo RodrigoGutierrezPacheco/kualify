@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { getUserInfo } from "@/services/users"
 import { Mail, Star } from 'lucide-react'
 import UserInfo from "./UserInfo"
+import Avatar from "@/components/ui/avata"
 
 export interface UserViewProps {
     id: string | null
@@ -77,13 +78,7 @@ export default function UserView({ id }: UserViewProps) {
                     {/* Columna izquierda - Información de perfil */}
                     <div className="md:w-1/3 flex flex-col items-center justify-start pt-10">
                         {/* Avatar - Versión simplificada sin documentos */}
-                        <div className="relative">
-                            <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                                <span className="text-4xl font-bold text-gray-600">
-                                    {userInfo?.username.charAt(0).toUpperCase()}
-                                </span>
-                            </div>
-                        </div>
+                        <Avatar isUser={true} documents={[]} userInfo={userInfo} handleGetInfo={handleGetUserInfo} handleGetDocuments={handleGetUserInfo} />
 
                         <div className="mt-4 text-center">
                             <h2 className="text-xl font-bold text-[#1e3a8a]">{userInfo?.username}</h2>

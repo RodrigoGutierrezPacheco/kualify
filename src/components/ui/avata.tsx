@@ -5,7 +5,7 @@ import { Camera } from "lucide-react"
 import { Upload, X, FileText } from "lucide-react"
 import { uploadProfessionalDocument } from "@/services/professionals"
 
-export default function Avatar({ documents = [], userInfo, handleGetDocuments, handleGetInfo }: {
+export default function Avatar({ documents = [], userInfo, handleGetDocuments, handleGetInfo, isUser }: {
   documents?: Array<{
     tipo: string;
     url?: string;
@@ -13,10 +13,13 @@ export default function Avatar({ documents = [], userInfo, handleGetDocuments, h
   userInfo: {
     id: string;
     profesionalname?: string;
+    username?: string;
   };
+  isUser?: boolean;
   handleGetInfo: () => void
   handleGetDocuments: () => void
 }) {
+  console.log(isUser)
   const [isOpen, setIsOpen] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [uploadError, setUploadError] = useState<string | null>(null)
@@ -34,10 +37,10 @@ export default function Avatar({ documents = [], userInfo, handleGetDocuments, h
       .substring(0, 2)
   }
 
-  const profileImage = Array.isArray(documents) 
-  ? documents.find((doc) => doc.tipo === "profile_image" && doc.url)
-  : null
-  
+  const profileImage = Array.isArray(documents)
+    ? documents.find((doc) => doc.tipo === "profile_image" && doc.url)
+    : null
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
@@ -73,34 +76,34 @@ export default function Avatar({ documents = [], userInfo, handleGetDocuments, h
 
     setIsUploading(true);
     setUploadError(null);
-    
+
     try {
-        const formData = new FormData();
-        formData.append('file', selectedFile); 
-        formData.append('tipo', 'profile_image');
-        const response = await uploadProfessionalDocument(
-            userInfo?.id, 
-            formData,
-            token ?? ""
-        );
-        if(response.url && response.url !== ""){
-            handleGetInfo()
-            handleGetDocuments()
-            setIsOpen(false);
-        } else {
-            setUploadError('Error al subir la imagen. Por favor intenta nuevamente.');
-        }
-    } catch (error) {
-        console.error('Error al subir imagen:', error);
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('tipo', 'profile_image');
+      const response = await uploadProfessionalDocument(
+        userInfo?.id,
+        formData,
+        token ?? ""
+      );
+      if (response.url && response.url !== "") {
+        handleGetInfo()
+        handleGetDocuments()
+        setIsOpen(false);
+      } else {
         setUploadError('Error al subir la imagen. Por favor intenta nuevamente.');
+      }
+    } catch (error) {
+      console.error('Error al subir imagen:', error);
+      setUploadError('Error al subir la imagen. Por favor intenta nuevamente.');
     } finally {
-        setIsUploading(false);
+      setIsUploading(false);
     }
-};
+  };
 
   return (
     <>
-      <div 
+      <div
         className="h-32 w-32 rounded-full bg-[#1e3a8a] text-white flex items-center justify-center text-3xl font-bold border-4 border-white shadow-lg overflow-hidden relative group cursor-pointer"
         onClick={() => setIsOpen(true)}
       >
@@ -114,7 +117,7 @@ export default function Avatar({ documents = [], userInfo, handleGetDocuments, h
           />
         ) : (
           <span className="flex items-center justify-center h-full w-full">
-            {getInitials(userInfo.profesionalname)}
+            {getInitials(userInfo.profesionalname || userInfo.username)}
           </span>
         )}
 
@@ -141,7 +144,7 @@ export default function Avatar({ documents = [], userInfo, handleGetDocuments, h
                 <X size={18} />
               </button>
             </div>
-            
+
             <div className="p-6">
               <input
                 type="file"
@@ -150,11 +153,10 @@ export default function Avatar({ documents = [], userInfo, handleGetDocuments, h
                 accept=".jpg,.jpeg,.png"
                 className="hidden"
               />
-              
+
               <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center mb-4 transition-all ${
-                  selectedFile ? "border-[#1e3a8a] bg-blue-50" : "border-gray-300 hover:border-blue-300 hover:bg-gray-50"
-                } ${isUploading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
+                className={`border-2 border-dashed rounded-lg p-8 text-center mb-4 transition-all ${selectedFile ? "border-[#1e3a8a] bg-blue-50" : "border-gray-300 hover:border-blue-300 hover:bg-gray-50"
+                  } ${isUploading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
                 onClick={() => !isUploading && fileInputRef.current?.click()}
                 onDrop={handleFileDrop}
                 onDragOver={handleDragOver}
@@ -195,14 +197,14 @@ export default function Avatar({ documents = [], userInfo, handleGetDocuments, h
                 )}
                 <p className="text-xs text-gray-400 mt-3">Formatos aceptados: JPG, PNG (Max. 5MB)</p>
               </div>
-              
+
               {uploadError && (
                 <div className="bg-red-50 border border-red-200 text-red-600 rounded-md p-3 text-sm mb-4">
                   {uploadError}
                 </div>
               )}
             </div>
-            
+
             <div className="p-4 border-t flex justify-end gap-2 bg-gray-50 rounded-b-lg">
               <button
                 onClick={() => {
@@ -217,9 +219,8 @@ export default function Avatar({ documents = [], userInfo, handleGetDocuments, h
               </button>
               <button
                 onClick={handleSubmitUpload}
-                className={`px-4 cursor-pointer py-2 bg-[#1e3a8a] text-white rounded-md hover:bg-[#2563eb] transition-colors flex items-center gap-2 font-medium shadow-sm ${
-                  !selectedFile || isUploading ? "opacity-70 cursor-not-allowed" : ""
-                }`}
+                className={`px-4 cursor-pointer py-2 bg-[#1e3a8a] text-white rounded-md hover:bg-[#2563eb] transition-colors flex items-center gap-2 font-medium shadow-sm ${!selectedFile || isUploading ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
                 disabled={!selectedFile || isUploading}
               >
                 {isUploading ? (
