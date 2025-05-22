@@ -3,10 +3,11 @@
 import { useState } from "react"
 import { Search, MapPin, Briefcase, Star, Filter } from "lucide-react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 export default function Profesionales() {
     const [filter, setFilter] = useState("")
-
+    const router = useRouter()
     // Sample data - replace with your actual data
     const professionals = [
         {
@@ -152,7 +153,7 @@ export default function Profesionales() {
                                 <div className="flex items-start gap-4">
                                     <div className="flex items-start gap-4">
                                         <Image
-                                            src={ "/placeholder.svg"}
+                                            src={"/placeholder.svg"}
                                             alt={``}
                                             width={80}
                                             height={80}
@@ -186,7 +187,9 @@ export default function Profesionales() {
                                     <button className="flex-1 cursor-pointer bg-[#1e3a8a] hover:bg-[#15296b] text-white font-medium py-2 px-4 rounded-lg">
                                         Contactar
                                     </button>
-                                    <button className="flex-1 border cursor-pointer border-[#1e3a8a] text-[#1e3a8a] hover:bg-[#1e3a8a] hover:text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    <button onClick={() => {
+                                        router.push(`/profesionales/98723432987234`)
+                                    }} className="flex-1 border cursor-pointer border-[#1e3a8a] text-[#1e3a8a] hover:bg-[#1e3a8a] hover:text-white font-medium py-2 px-4 rounded-lg transition-colors">
                                         Ver perfil
                                     </button>
                                 </div>
