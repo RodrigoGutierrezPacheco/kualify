@@ -7,6 +7,7 @@ import RegistrationModal from "@/components/Modals/Create"
 import RegistrationModalProfessional from "@/components/Modals/CreateProfessional"
 import Login from "@/components/Modals/Login"
 import Button from "@/components/ui/button"
+import SearchSection from "@/components/ui/searchSection"
 
 export default function HomePage() {
   const [isOpen, setIsOpen] = useState(false)
@@ -23,7 +24,7 @@ export default function HomePage() {
         crossOrigin="anonymous"
         referrerPolicy="no-referrer"
       />
-      
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-[#1E3A8A] to-[#2C4A9A] text-white py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,35 +68,7 @@ export default function HomePage() {
       </section>
 
       {/* Search Section */}
-      <section className="py-8 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-xl shadow-lg p-6 -mt-12 md:-mt-16 relative z-20 max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                  <input
-                    type="text"
-                    placeholder="¿Qué servicio necesitas?"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]"
-                  />
-                </div>
-              </div>
-              <div className="flex-1">
-                <div className="relative">
-                  <i className="fas fa-building absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                  <input
-                    type="text"
-                    placeholder="¿Dónde lo necesitas?"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]"
-                  />
-                </div>
-              </div>
-              <Button>Buscar</Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <SearchSection />
 
       {/* Services Section */}
       <section id="servicios" className="py-16 bg-gray-50">
