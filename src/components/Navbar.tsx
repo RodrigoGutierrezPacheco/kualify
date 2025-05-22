@@ -17,7 +17,6 @@ export default function Navbar() {
     const [userName, setUserName] = useState("")
     const [userMenuOpen, setUserMenuOpen] = useState(false)
     const [windowWidth, setWindowWidth] = useState<number>(typeof window !== "undefined" ? window.innerWidth : 0)
-
     const userMenuRef = useRef<HTMLDivElement>(null)
     const userButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -133,19 +132,19 @@ export default function Navbar() {
                     {/* Desktop Navigation - Hidden on mobile, visible on tablet and up */}
                     <nav className={`hidden ${isTablet ? "sm:flex space-x-2" : "md:flex space-x-4 lg:space-x-6"}`}>
                         <Link
-                            href="#servicios"
+                            href="/servicios"
                             className="text-gray-600 hover:text-[#1E3A8A] font-medium transition-colors whitespace-nowrap text-sm sm:text-base"
                         >
                             Servicios
                         </Link>
                         <Link
-                            href="#como-funciona"
+                            href="/como-funciona"
                             className="text-gray-600 hover:text-[#1E3A8A] font-medium transition-colors whitespace-nowrap text-sm sm:text-base"
                         >
                             Cómo funciona
                         </Link>
                         <Link
-                            href="#profesionales"
+                            href="/profesionales"
                             className="text-gray-600 hover:text-[#1E3A8A] font-medium transition-colors whitespace-nowrap text-sm sm:text-base"
                         >
                             Profesionales

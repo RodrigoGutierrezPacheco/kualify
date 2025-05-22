@@ -148,9 +148,8 @@ export default function SearchSection() {
                                 </ul>
                             )}
                         </div>
-                        <Button onClick={() => {
+                        <Button className='cursor-pointer' onClick={() => {
                             handleSearch()
-
                         }}>Buscar</Button>
                     </div>
                     {error && (
